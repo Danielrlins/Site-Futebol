@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Resultados e Pontuação</title>
+  <link rel="stylesheet" href="resultados.css">
+</head>
+<body>
+  <script src="adm.js"></script>
+  <script>
+    verificarPermissao(true); // Visitante pode acessar
+  </script>
+
+  <div class="wrapper">
+
+    <h1>Resultados</h1>
+     <div class="cards-container">
+       <!-- JS vai gerar os "cards" com os dados aqui -->
+    </div>
+    <div class="tabela-container">
+      <table id="tabelaResultados">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Partidas Jogadas</th>
+            <th>Pontos</th>
+            <th>Gols</th>
+            <th>Cartões Vermelhos</th>
+            <th>Cartões Amarelos</th>
+            <th>Atrasos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Conteúdo gerado via JS -->
+        </tbody>
+      </table>
+    </div>
+   
+    <div id="botoes-acesso">
+  <!-- Este será preenchido via JavaScript -->
+   </div>
+
+
+  </div>
+
+  <script>
+  const usuario = localStorage.getItem("usuario");
+  const botoesDiv = document.getElementById("botoes-acesso");
+
+  // Botões comuns para todos
+  botoesDiv.innerHTML = `
+    <button onclick="window.location.href='jogadores.html'">Ir para Jogadores</button>
+    <button onclick="window.location.href='placares.html'">Ir para Placares</button>
+    <button onclick="window.location.href='index.html'">Voltar para o Login</button>
+  `;
+
+  // Se for admin, adiciona botões extras
+  if (usuario === "admin") {
+    // Botão para registrar
+    const botaoRegistro = document.createElement("button");
+    botaoRegistro.textContent = "Voltar para Registrar";
+    botaoRegistro.onclick = () => window.location.href = 'registro.html';
+    botoesDiv.prepend(botaoRegistro); // insere antes dos outros
+
+    // Botão para limpar registros
+    const botaoLimpar = document.createElement("button");
+    botaoLimpar.textContent = "Limpar Registros";
+    botaoLimpar.onclick = () => {
+      const confirmar = confirm("Tem certeza que deseja limpar todos os registros?");
+      if (confirmar) {
+        localStorage.removeItem("partidas");
+        alert("Registros apagados com sucesso!");
+        location.reload();
+      }
+    };
+    botoesDiv.appendChild(botaoLimpar); // adiciona depois dos outros
+  }
+
+    const times = JSON.parse(localStorage.getItem('timesOrganizados')) || [];
+    const partidas = JSON.parse(localStorage.getItem('partidas')) || [];
+
+    const estatisticasPorTime = {};
+
+    // Inicializa estatísticas para cada time
+    times.forEach((_, idx) => {
+      estatisticasPorTime[idx] = {
+        partidas: 0,
+        pontos: 0,
+        gols: 0,
+        cartoesVermelhos: 0,
+        cartoesAmarelos: 0,
+        atrasos: 0
+      };
+    });
+
+    // Soma as estatísticas para cada time baseado nas partidas
+    partidas.forEach(partida => {
+      const a = partida.timeA;
+      const b = partida.timeB;
+
+      // Atualiza time A
+      estatisticasPorTime[a.index].partidas++;
+      estatisticasPorTime[a.index].pontos += a.pontos;
+      estatisticasPorTime[a.index].gols += a.gols;
+      estatisticasPorTime[a.index].cartoesVermelhos += a.cartoesVermelhos;
+      estatisticasPorTime[a.index].cartoesAmarelos += a.cartoesAmarelos;
+      estatisticasPorTime[a.index].atrasos += a.atrasos;
+
+      // Atualiza time B
+      estatisticasPorTime[b.index].partidas++;
+      estatisticasPorTime[b.index].pontos += b.pontos;
+      estatisticasPorTime[b.index].gols += b.gols;
+      estatisticasPorTime[b.index].cartoesVermelhos += b.cartoesVermelhos;
+      estatisticasPorTime[b.index].cartoesAmarelos += b.cartoesAmarelos;
+      estatisticasPorTime[b.index].atrasos += b.atrasos;
+    });
+
+    const tbody = document.querySelector('#tabelaResultados tbody');
+    tbody.innerHTML = '';
+
+    if (times.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="msg">Nenhum time cadastrado.</td></tr>';
+    } else if (partidas.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="msg">Nenhuma partida registrada ainda.</td></tr>';
+    } else {
+      times.forEach((time, idx) => {
+        const est = estatisticasPorTime[idx];
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td>Time ${idx + 1} - ${time.jogadores.length} jogadores</td>
+          <td>${est.partidas}</td>
+          <td>${est.pontos}</td>
+          <td>${est.gols}</td>
+          <td>${est.cartoesVermelhos}</td>
+          <td>${est.cartoesAmarelos}</td>
+          <td>${est.atrasos}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      // 👇 Adiciona isso aqui!
+      const dadosParaCards = times.map((time, idx) => {
+        const est = estatisticasPorTime[idx];
+        return {
+          nome: `Time ${idx + 1} - ${time.jogadores.length} jogadores`,
+          partidas: est.partidas,
+          pontos: est.pontos,
+          gols: est.gols,
+          vermelhos: est.cartoesVermelhos,
+          amarelos: est.cartoesAmarelos,
+          atrasos: est.atrasos
+        };
+      });
+
+      gerarCards(dadosParaCards); // Chama a função dos cards
+    }
+
+    document.getElementById('limparResultados').addEventListener('click', () => {
+      if (confirm('Tem certeza que deseja limpar todos os resultados?')) {
+        localStorage.removeItem('partidas');
+        location.reload();
+      }
+    });
+
+    function gerarCards(dadosTimes) {
+  const container = document.querySelector('.cards-container');
+  container.innerHTML = '';
+
+  dadosTimes.forEach(time => {
+    const card = document.createElement('div');
+    card.className = 'card-time';
+    card.innerHTML = `
+      <h3>${time.nome}</h3>
+      <p><strong>Partidas:</strong> ${time.partidas}</p>
+      <p><strong>Pontos:</strong> ${time.pontos}</p>
+      <p><strong>Gols:</strong> ${time.gols}</p>
+      <p><strong>Vermelhos:</strong> ${time.vermelhos}</p>
+      <p><strong>Amarelos:</strong> ${time.amarelos}</p>
+      <p><strong>Atrasos:</strong> ${time.atrasos}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+
+  </script>
+</body>
+</html>
+

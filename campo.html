@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Visualização dos Times - Formações 5, 6 e 11</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #1e7e34;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      margin: 10px 0 20px;
+      font-size: 22px;
+    }
+
+    .campo {
+      
+      width: 350px;
+      height: 520px;
+      background: url('https://i.imgur.com/LiJjklC.jpg') no-repeat center center;
+      background-size: cover;
+      border: 4px solid #fff;
+      border-radius: 12px;
+      box-sizing: border-box;
+      margin: 0 auto;
+      position: relative;
+      transition: transform 0.5s ease;
+    }
+
+    .jogador {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      background: white;
+      border-radius: 15px 15px 40px 40px;
+      box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.3),
+        inset 0 5px 10px rgba(255, 255, 255, 0.4);
+      cursor: grab;
+      user-select: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-top: 15px;
+      box-sizing: border-box;
+
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .jogador.dragging {
+    opacity: 0.8;
+    transform: scale(1.15) rotate(3deg);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+    z-index: 10;
+    }
+
+    .jogador.dropped {
+    animation: bounceAlive 0.5s ease forwards;
+    }
+
+    @keyframes bounceAlive {
+    0%   { transform: scale(1.2) rotate(-3deg); }
+    50%  { transform: scale(0.9) rotate(1deg); }
+    80%  { transform: scale(1.05) rotate(-1deg); }
+    100% { transform: scale(1) rotate(0); }
+    }
+
+        @keyframes flash-verde {
+    0% {
+        box-shadow: 0 0 0px 0px #28a745;
+        background-color: #e6ffe6;
+    }
+    50% {
+        box-shadow: 0 0 12px 6px #28a745;
+        background-color: #a6f3a6;
+    }
+    100% {
+        box-shadow: 0 0 0px 0px #28a745;
+        background-color: white;
+    }
+    }
+
+    .flash-verde {
+    animation: flash-verde 0.6s ease forwards;
+    }
+
+    .jogador .nome {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      z-index: 3;
+    }
+
+    .jogador .estrelas {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+      z-index: 3;
+    }
+
+    .botoes {
+      margin: 20px 0 10px;
+    }
+
+    .botoes button {
+      padding: 8px 14px;
+      margin: 0 8px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      background-color: #fff;
+      color: #1e7e34;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+    }
+
+    .botoes button:hover {
+      background-color: #ddd;
+    }
+
+    .voltar {
+      display: block;
+      margin: 10px auto;
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      background-color: #000;
+      padding: 6px 12px;
+      border-radius: 6px;
+      width: fit-content;
+      transition: background-color 0.2s ease;
+    }
+
+    .voltar:hover {
+      background-color: #222;
+    }
+   
+    .campo-wrapper {
+    width: 350px;
+    height: 900px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .btn-top-right {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: #32aa4e;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease;
+}
+
+.btn-top-right:hover {
+  background-color: #145c25;
+}
+
+.botoes-finais{
+   display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.registrar{
+   background-color: #32aa4e;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease;
+  display: none;
+}
+
+.registrar:hover{
+   background-color: #145c25;
+}
+
+
+@media (max-width: 800px){
+  .btn-top-right{
+    display: none;
+  }
+  .registrar{
+    display: flex;
+  }
+
+}
+ 
+
+
+  </style>
+</head>
+<body>
+  <script src="adm.js"></script>
+  <script>
+    verificarPermissao(false); // Só admin pode acessar
+  </script>
+
+  <a href="registro.html" class="btn-top-right">📋 Registrar jogos</a>
+
+  <h1 id="nomeTime">Time</h1>
+
+  <div class="campo-wrapper">
+    <div class="campo" id="campo"></div>
+  </div>
+
+  <div class="botoes">
+    <button onclick="anterior()">◀ Anterior</button>
+    <button onclick="proximo()">Próximo ▶</button>
+  </div>
+
+  <div class="botoes-finais">
+    <a href="app.html" class="voltar">⬅ Voltar para edição</a>
+    <a href="registro.html" class="registrar">📋 Registrar jogos</a>
+  </div>
+
+  
+
+  <script>
+    const times = JSON.parse(localStorage.getItem('timesOrganizados')) || [];
+    let indiceAtual = 0;
+    if (!times.length) {
+      document.getElementById('campo').innerHTML = '<p style="color: red; font-weight: bold;">Nenhum time encontrado. Volte para a página de edição e sorteie os times.</p>';
+      document.getElementById('nomeTime').textContent = 'Nenhum time disponível';
+      document.querySelector('.botoes').style.display = 'none';
+      document.querySelector('.botoes-finais').style.display = 'block';
+    }
+
+    function trocar(de, para) {
+    const campo = document.getElementById('campo');
+    const divs = campo.querySelectorAll('.jogador');
+
+    // Aplica flash nas divs atuais
+    divs[de].classList.add('flash-verde');
+    divs[para].classList.add('flash-verde');
+
+    
+
+    // Após a animação, troca jogadores e re-renderiza
+    setTimeout(() => {
+        divs[de].classList.remove('flash-verde');
+        divs[para].classList.remove('flash-verde');
+
+        // Troca jogadores no array
+        const jogadores = times[indiceAtual].jogadores;
+        [jogadores[de], jogadores[para]] = [jogadores[para], jogadores[de]];
+
+        // 👉 SALVA NO LOCALSTORAGE
+        localStorage.setItem('timesOrganizados', JSON.stringify(times));
+
+        renderizarCampo();
+    }, 600); // duração da animação
+}
+
+
+    
+
+    function renderizarCampo() {
+      const campo = document.getElementById('campo');
+      campo.innerHTML = '';
+
+      if (!times[indiceAtual]) {
+        document.getElementById('nomeTime').textContent = 'Nenhum time encontrado';
+        return;
+      }
+
+      const time = times[indiceAtual];
+      document.getElementById('nomeTime').textContent = `Time ${indiceAtual + 1} - ⭐${time.estrelas}`;
+
+      const jogadores = time.jogadores;
+
+      let posicoes = [];
+
+      if (jogadores.length === 5) {
+        posicoes = [
+          { left: 135, top: 310 },
+          { left: 30,  top: 240 },
+          { left: 235, top: 240 },
+          { left: 135, top: 150 },
+          { left: 135, top: 30 }
+        ];
+      } else if (jogadores.length === 6) {
+        posicoes = [
+          { left: 135, top: 320 },
+          { left: 40,  top: 240 },
+          { left: 230, top: 240 },
+          { left: 70, top: 135 },
+          { left: 200, top: 135 },
+          { left: 135, top: 20 }
+        ];
+      } else if (jogadores.length === 4){
+        posicoes = [
+          { left: 135, top: 320 },
+          { left: 40,  top: 200 },
+          { left: 230, top: 200 },
+          { left: 135, top: 50 },
+          { left: 200, top: 135 },
+          { left: 135, top: 20 }
+        ]
+      }
+       else {
+        posicoes = [
+          { left: 140, top: 410 },
+          { left: 60,  top: 340 },
+          { left: 220, top: 340 },
+          { left: 30,  top: 270 },
+          { left: 250, top: 270 },
+          { left: 100, top: 210 },
+          { left: 190, top: 210 },
+          { left: 140, top: 160 },
+          { left: 140, top: 110 },
+          { left: 90,  top: 60 },
+          { left: 190, top: 60 }
+        ];
+      }
+
+      jogadores.forEach((jogador, index) => {
+        if (index >= posicoes.length) return;
+
+        const div = document.createElement('div');
+        const corUniforme = time.cor || "#fff";
+        const corTexto = time.texto || "#000";
+
+        div.className = 'jogador';
+        div.style.left = `${posicoes[index].left}px`;
+        div.style.top = `${posicoes[index].top}px`;
+        div.style.backgroundColor = corUniforme;
+        div.style.color = corTexto;
+        div.setAttribute('draggable', true);
+        div.dataset.index = index;
+
+        div.innerHTML = `
+          <div class="nome">${jogador.nome}</div>
+          <div class="estrelas">${'⭐'.repeat(jogador.estrela)}</div>
+        `;
+
+        // Drag and drop com animação
+        div.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('index', div.dataset.index);
+          div.classList.add('dragging');
+        });
+
+        div.addEventListener('dragend', e => {
+          div.classList.remove('dragging');
+        });
+
+        div.addEventListener('dragover', e => {
+          e.preventDefault();
+        });
+
+        div.addEventListener('drop', e => {
+          e.preventDefault();
+          const de = parseInt(e.dataTransfer.getData('index'));
+          const para = parseInt(e.currentTarget.dataset.index);
+          trocar(de, para);
+
+          e.currentTarget.classList.add('dropped');
+          setTimeout(() => {
+            e.currentTarget.classList.remove('dropped');
+          }, 300);
+        });
+
+        campo.appendChild(div);
+      });
+    }
+
+  function proximo() {
+  if (indiceAtual < times.length - 1) {
+    animarTroca('esquerda', () => {
+      indiceAtual++;
+      renderizarCampo();
+    });
+  }
+}
+
+function anterior() {
+  if (indiceAtual > 0) {
+    animarTroca('direita', () => {
+      indiceAtual--;
+      renderizarCampo();
+    });
+  }
+}
+
+function animarTroca(direcao, callback) {
+  const campo = document.getElementById('campo');
+  const deslocamento = direcao === 'esquerda' ? '-100%' : '100%';
+
+  // move o campo para fora
+  campo.style.transform = `translateX(${deslocamento})`;
+
+  // espera a transição terminar
+  setTimeout(() => {
+    campo.style.transition = 'none';
+    campo.style.transform = `translateX(${direcao === 'esquerda' ? '100%' : '-100%'})`;
+
+    // força reflow antes de restaurar a transição
+    void campo.offsetWidth;
+
+    callback(); // troca o time
+
+    campo.style.transition = 'transform 0.5s ease';
+    campo.style.transform = 'translateX(0)';
+  }, 500);
+}
+
+
+    renderizarCampo();
+  </script>
+</body>
+</html>

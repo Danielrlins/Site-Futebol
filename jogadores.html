@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jogadores por Time</title>
+  <link rel="stylesheet" href="jogadores.css">
+</head>
+<body>
+  <script src="adm.js"></script>
+  <script>
+    verificarPermissao(true); // Visitante pode acessar
+  </script>
+
+  <div class="container">
+    <h1>Jogadores por Time</h1>
+    
+    <label for="filtroTime">Selecione um Time:</label>
+    <select id="filtroTime">
+      <option value="" selected>Todos os Times</option>
+    </select>
+    <div id="listaJogadores"></div>
+    <div class="buttons">
+      <button onclick="window.location.href='resultados.html'">Voltar para Resultados</button>
+      <button id="resetarJogadores" style="display: none;">Resetar Dados dos Jogadores</button>
+
+    </div>
+  </div>
+
+
+
+  <script>
+    
+    const times = JSON.parse(localStorage.getItem('timesOrganizados')) || [];
+    const filtroTime = document.getElementById('filtroTime');
+    const container = document.getElementById('listaJogadores');
+
+    function montarListaJogadores(timesFiltrados) {
+      container.innerHTML = '';
+
+      if (timesFiltrados.length === 0) {
+        container.innerHTML = '<p class="no-players">Nenhum jogador encontrado.</p>';
+        return;
+      }
+
+      timesFiltrados.forEach((time, idx) => {
+        const divTime = document.createElement('div');
+        divTime.classList.add('time');
+
+        const titulo = document.createElement('h2');
+        titulo.classList.add('time-title');
+
+        //Mudar o titulo conforme a seleçao escolhida
+        const numeroTime = time._indiceOriginal !== undefined ? time._indiceOriginal + 1 : idx + 1;
+        titulo.textContent = `Time ${numeroTime} (${time.jogadores.length} jogadores)`;
+
+        divTime.appendChild(titulo);
+
+        const ul = document.createElement('ul');
+        time.jogadores.forEach(jogador => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <strong>${jogador.nome || 'Nome não informado'}</strong><br>
+            Gols: ${jogador.gols || 0} |
+            Amarelos: ${jogador.cartoesAmarelos || 0} |
+            Vermelhos: ${jogador.cartoesVermelhos || 0} |
+            Atrasos: ${jogador.atrasos || 0}
+        `;
+        ul.appendChild(li);
+        });
+
+
+        divTime.appendChild(ul);
+        container.appendChild(divTime);
+      });
+    }
+
+    document.getElementById('resetarJogadores').addEventListener('click', () => {
+  if (confirm('Tem certeza que deseja zerar os dados dos jogadores?')) {
+    times.forEach(time => {
+      time.jogadores.forEach(jogador => {
+        jogador.gols = 0;
+        jogador.cartoesVermelhos = 0;
+        jogador.cartoesAmarelos = 0;
+        jogador.atrasos = 0;
+      });
+    });
+
+    localStorage.setItem('timesOrganizados', JSON.stringify(times));
+    alert('Dados dos jogadores resetados com sucesso!');
+    montarListaJogadores(times); // Atualiza a exibição na tela
+  }
+});
+
+
+    function popularFiltro() {
+      times.forEach((time, idx) => {
+        const option = document.createElement('option');
+        option.value = idx;
+        option.textContent = `Time ${idx + 1} (${time.jogadores.length} jogadores)`;
+        filtroTime.appendChild(option);
+      });
+    }
+
+    filtroTime.addEventListener('change', () => {
+      const valor = filtroTime.value;
+      if (valor === '') {
+        montarListaJogadores(times);
+      } else {
+        montarListaJogadores([{ ...times[valor], _indiceOriginal: parseInt(valor) }]);
+      }
+    });
+
+    // Inicializa
+    popularFiltro();
+    montarListaJogadores(times);
+
+  // Mostrar botão apenas se o usuário for admin
+  const usuario = localStorage.getItem("usuario");
+  if (usuario === "admin") {
+    document.getElementById('resetarJogadores').style.display = 'inline-block';
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Placar dos Jogos</title>
+   <link rel="stylesheet" href="placares.css">
+</head>
+<body>
+  <script src="adm.js"></script>
+  <script>
+    verificarPermissao(true); // Visitante pode acessar
+  </script>
+
+  <h1>Placar dos Jogos</h1>
+  <div id="placares"></div>
+  <a href="resultados.html" class="botao-voltar">
+    Voltar para Resultados
+  </a>
+
+
+  <script>
+    const partidas = JSON.parse(localStorage.getItem('partidas')) || [];
+    const times = JSON.parse(localStorage.getItem('timesOrganizados')) || [];
+    const container = document.getElementById('placares');
+
+    if (partidas.length === 0) {
+      container.innerHTML = '<p style="text-align:center;">Nenhuma partida registrada ainda.</p>';
+    } else {
+      partidas.forEach(p => {
+        const nomeA = times[p.timeA.index]?.nome || `Time ${p.timeA.index + 1}`;
+        const nomeB = times[p.timeB.index]?.nome || `Time ${p.timeB.index + 1}`;
+        const data = new Date(p.data).toLocaleString('pt-BR');
+
+        function formatarLista(lista) {
+          return lista.length ? lista.join(', ') : 'Nenhum';
+        }
+
+        const div = document.createElement('div');
+        div.className = 'jogo';
+        div.innerHTML = `
+          <h3>${nomeA} vs ${nomeB}</h3>
+          <p><strong>Placar:</strong> ${p.timeA.gols} x ${p.timeB.gols}</p>
+          <p><strong>Data:</strong> ${data}</p>
+          <details>
+            <summary>Ver detalhes por jogador</summary>
+            <strong>Gols:</strong>
+            <ul>
+              <li><b>${nomeA}:</b> ${formatarLista(p.timeA.jogadores.gols)}</li>
+              <li><b>${nomeB}:</b> ${formatarLista(p.timeB.jogadores.gols)}</li>
+            </ul>
+            <strong style="color:yellow">Cartões Amarelos:</strong>
+            <ul>
+              <li><b>${nomeA}:</b> ${formatarLista(p.timeA.jogadores.cartoesAmarelos)}</li>
+              <li><b>${nomeB}:</b> ${formatarLista(p.timeB.jogadores.cartoesAmarelos)}</li>
+            </ul>
+             <strong style="color:red">Cartões Vermelhos:</strong>
+            <ul>
+              <li><b>${nomeA}:</b> ${formatarLista(p.timeA.jogadores.cartoesVermelhos)}</li>
+              <li><b>${nomeB}:</b> ${formatarLista(p.timeB.jogadores.cartoesVermelhos)}</li>
+            </ul>
+            <strong>Atrasos:</strong>
+            <ul>
+              <li><b>${nomeA}:</b> ${formatarLista(p.timeA.jogadores.atrasos)}</li>
+              <li><b>${nomeB}:</b> ${formatarLista(p.timeB.jogadores.atrasos)}</li>
+            </ul>
+          </details>
+        `;
+        container.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>

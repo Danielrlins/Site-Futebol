@@ -1,0 +1,117 @@
+ body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 20px auto;
+      background-color: #f0f0f0;
+      padding: 20px;
+      border-radius: 10px;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      color: #1e7e34;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    select, input[type=number] {
+      padding: 6px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .times-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .time-bloco {
+      flex: 1 1 45%;
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    }
+    button {
+      background-color: #1e7e34;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #155c26;
+    }
+    .nav-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .nav-buttons button {
+      flex: 1 1 auto;
+    }
+    .voltar {
+      display: inline-block;
+      margin: 10px 0;
+      padding: 8px 14px;
+      background-color: #1e7e34;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+     text-align: center;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     
+    }
+    .voltar a{
+      text-decoration: none;
+      color: #fff;
+    }
+    .voltar:hover {
+      background-color: #145c25;
+    }
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    #loadingOverlay p{
+      color: #fff;
+      font-size: 24px;
+    }
+    .spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #1e7e34;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    .eventos-container {
+      margin-top: 10px;
+    }

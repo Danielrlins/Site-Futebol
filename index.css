@@ -1,0 +1,76 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f2f2f2; /* Cinza claro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-container {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 350px;
+}
+
+.login-container h2 {
+  color: #2e7d32; /* Verde escuro */
+  margin-bottom: 24px;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.login-container input:focus {
+  border-color: #2e7d32;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.login-container button:hover {
+  background-color: #1b5e20;
+}
+
+.login-container p {
+  color: #2e7d32;
+  margin: 15px 0;
+  font-weight: 500;
+}
+
+@media (max-width: 700px) {
+    .login-container{
+      width: 100%;
+     
+      display: flex;
+      flex-direction: column;
+    }
+}

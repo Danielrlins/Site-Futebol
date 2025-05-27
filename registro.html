@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registrar Partida</title>
+  <link rel="stylesheet" href="registro.css">
+</head>
+<body>
+  <script>
+    verificarPermissao(false); // Só admin pode acessar
+  </script>
+
+
+  <h1>Registrar Partida</h1>
+
+  <form id="partidaForm">
+    <label for="timeA">Time A</label>
+    <select id="timeA" required></select>
+
+    <label for="timeB">Time B</label>
+    <select id="timeB" required></select>
+
+    <div class="times-container">
+      <div class="time-bloco">
+        <h3>Time A - Detalhes</h3>
+        <label for="golsA">Gols</label>
+        <input type="number" id="golsA" min="0" value="0" required />
+        <div id="golsAEventos" class="eventos-container"></div>
+
+        <label for="cartoesVermelhosA">Cartões Vermelhos</label>
+        <input type="number" id="cartoesVermelhosA" min="0" value="0" required />
+        <div id="vermelhosAEventos" class="eventos-container"></div>
+
+        <label for="cartoesAmarelosA">Cartões Amarelos</label>
+        <input type="number" id="cartoesAmarelosA" min="0" value="0" required />
+        <div id="amarelosAEventos" class="eventos-container"></div>
+
+        <label for="atrasosA">Atrasos</label>
+        <input type="number" id="atrasosA" min="0" value="0" required />
+        <div id="atrasosAEventos" class="eventos-container"></div>
+      </div>
+
+      <div class="time-bloco">
+        <h3>Time B - Detalhes</h3>
+        <label for="golsB">Gols</label>
+        <input type="number" id="golsB" min="0" value="0" required />
+        <div id="golsBEventos" class="eventos-container"></div>
+
+        <label for="cartoesVermelhosB">Cartões Vermelhos</label>
+        <input type="number" id="cartoesVermelhosB" min="0" value="0" required />
+        <div id="vermelhosBEventos" class="eventos-container"></div>
+
+        <label for="cartoesAmarelosB">Cartões Amarelos</label>
+        <input type="number" id="cartoesAmarelosB" min="0" value="0" required />
+        <div id="amarelosBEventos" class="eventos-container"></div>
+
+        <label for="atrasosB">Atrasos</label>
+        <input type="number" id="atrasosB" min="0" value="0" required />
+        <div id="atrasosBEventos" class="eventos-container"></div>
+      </div>
+    </div>
+
+    <button type="submit">Enviar Resultado</button>
+  </form>
+
+  <div class="nav-buttons">
+    <button onclick="verResultados()">Ver Resultados</button>
+  </div>
+  <div class="voltar"><a href="campo.html">⬅ Voltar para o campo</a></div>
+
+  <div id="loadingOverlay">
+    <p>Carregando Resultados...</p>
+    <div class="spinner"></div>
+  </div>
+
+  <script>
+  const times = JSON.parse(localStorage.getItem('timesOrganizados')) || [];
+  const timeASelect = document.getElementById('timeA');
+  const timeBSelect = document.getElementById('timeB');
+
+  function preencherTimes() {
+    timeASelect.innerHTML = '<option value="" disabled selected>Selecione o Time A</option>';
+    timeBSelect.innerHTML = '<option value="" disabled selected>Selecione o Time B</option>';
+    times.forEach((time, index) => {
+      const optionA = document.createElement('option');
+      optionA.value = index;
+      optionA.textContent = `Time ${index + 1} - ${time.jogadores.length} jogadores`;
+      timeASelect.appendChild(optionA);
+
+      const optionB = document.createElement('option');
+      optionB.value = index;
+      optionB.textContent = `Time ${index + 1} - ${time.jogadores.length} jogadores`;
+      timeBSelect.appendChild(optionB);
+    });
+  }
+  preencherTimes();
+
+  timeASelect.addEventListener('change', () => {
+    if (timeASelect.value === timeBSelect.value) {
+      alert('Escolha times diferentes');
+      timeBSelect.value = '';
+    }
+  });
+  timeBSelect.addEventListener('change', () => {
+    if (timeBSelect.value === timeASelect.value) {
+      alert('Escolha times diferentes');
+      timeBSelect.value = '';
+    }
+  });
+
+  function criarCamposEvento(containerId, quantidade, jogadores) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    for (let i = 0; i < quantidade; i++) {
+      const select = document.createElement('select');
+      select.required = true;
+
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      defaultOption.textContent = 'Selecione o jogador';
+      select.appendChild(defaultOption);
+
+      jogadores.forEach(j => {
+        const option = document.createElement('option');
+        option.value = j.nome;
+        option.textContent = j.nome;
+        select.appendChild(option);
+      });
+      container.appendChild(select);
+    }
+  }
+
+  function monitorarCamposEvento(campoId, containerId, timeSelectId, tipoEvento) {
+    const campo = document.getElementById(campoId);
+    campo.addEventListener('change', () => {
+      const timeIndex = document.getElementById(timeSelectId).value;
+      if (!times[timeIndex]) return;
+      const jogadores = times[timeIndex].jogadores || [];
+      criarCamposEvento(containerId, parseInt(campo.value), jogadores);
+    });
+  }
+
+  monitorarCamposEvento('golsA', 'golsAEventos', 'timeA');
+  monitorarCamposEvento('golsB', 'golsBEventos', 'timeB');
+  monitorarCamposEvento('cartoesVermelhosA', 'vermelhosAEventos', 'timeA');
+  monitorarCamposEvento('cartoesVermelhosB', 'vermelhosBEventos', 'timeB');
+  monitorarCamposEvento('cartoesAmarelosA', 'amarelosAEventos', 'timeA');
+  monitorarCamposEvento('cartoesAmarelosB', 'amarelosBEventos', 'timeB');
+  monitorarCamposEvento('atrasosA', 'atrasosAEventos', 'timeA');
+  monitorarCamposEvento('atrasosB', 'atrasosBEventos', 'timeB');
+
+  function atualizarEstatisticasDosJogadores(containerId, tipo, idxTime) {
+    const container = document.getElementById(containerId);
+    const selects = container.querySelectorAll('select');
+    selects.forEach(select => {
+      const nome = select.value;
+      const jogador = times[idxTime].jogadores.find(j => j.nome === nome);
+      if (jogador) {
+        jogador[tipo] = (jogador[tipo] || 0) + 1;
+      }
+    });
+  }
+
+  document.getElementById('partidaForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const idxA = parseInt(timeASelect.value);
+    const idxB = parseInt(timeBSelect.value);
+    if (isNaN(idxA) || isNaN(idxB)) {
+      alert('Selecione ambos os times!');
+      return;
+    }
+
+    const golsA = parseInt(document.getElementById('golsA').value);
+    const golsB = parseInt(document.getElementById('golsB').value);
+    const cvA = parseInt(document.getElementById('cartoesVermelhosA').value) || 0;
+    const cvB = parseInt(document.getElementById('cartoesVermelhosB').value) || 0;
+    const caA = parseInt(document.getElementById('cartoesAmarelosA').value) || 0;
+    const caB = parseInt(document.getElementById('cartoesAmarelosB').value) || 0;
+    const atrasosA = parseInt(document.getElementById('atrasosA').value) || 0;
+    const atrasosB = parseInt(document.getElementById('atrasosB').value) || 0;
+
+    let pontosA = 0, pontosB = 0;
+    if (golsA > golsB) pontosA += 3;
+    else if (golsA < golsB) pontosB += 3;
+    else { pontosA += 1; pontosB += 1; }
+    pontosA -= (cvA * 5 + caA * 2 + atrasosA * 1);
+    pontosB -= (cvB * 5 + caB * 2 + atrasosB * 1);
+
+    // Atualiza estatísticas dos jogadores
+    atualizarEstatisticasDosJogadores('golsAEventos', 'gols', idxA);
+    atualizarEstatisticasDosJogadores('vermelhosAEventos', 'cartoesVermelhos', idxA);
+    atualizarEstatisticasDosJogadores('amarelosAEventos', 'cartoesAmarelos', idxA);
+    atualizarEstatisticasDosJogadores('atrasosAEventos', 'atrasos', idxA);
+
+    atualizarEstatisticasDosJogadores('golsBEventos', 'gols', idxB);
+    atualizarEstatisticasDosJogadores('vermelhosBEventos', 'cartoesVermelhos', idxB);
+    atualizarEstatisticasDosJogadores('amarelosBEventos', 'cartoesAmarelos', idxB);
+    atualizarEstatisticasDosJogadores('atrasosBEventos', 'atrasos', idxB);
+
+  // para salvar os dados de forma que seja partida por partida, sem acumular
+    function obterNomesDeEventos(containerId) {
+  const container = document.getElementById(containerId);
+  return Array.from(container.querySelectorAll('select')).map(sel => sel.value);
+}
+
+const partida = {
+  timeA: {
+    index: idxA,
+    gols: golsA,
+    cartoesVermelhos: cvA,
+    cartoesAmarelos: caA,
+    atrasos: atrasosA,
+    pontos: pontosA,
+    jogadores: {
+      gols: obterNomesDeEventos('golsAEventos'),
+      cartoesVermelhos: obterNomesDeEventos('vermelhosAEventos'),
+      cartoesAmarelos: obterNomesDeEventos('amarelosAEventos'),
+      atrasos: obterNomesDeEventos('atrasosAEventos')
+    }
+  },
+  timeB: {
+    index: idxB,
+    gols: golsB,
+    cartoesVermelhos: cvB,
+    cartoesAmarelos: caB,
+    atrasos: atrasosB,
+    pontos: pontosB,
+    jogadores: {
+      gols: obterNomesDeEventos('golsBEventos'),
+      cartoesVermelhos: obterNomesDeEventos('vermelhosBEventos'),
+      cartoesAmarelos: obterNomesDeEventos('amarelosBEventos'),
+      atrasos: obterNomesDeEventos('atrasosBEventos')
+    }
+  },
+  data: new Date().toISOString()
+};
+
+
+    const partidas = JSON.parse(localStorage.getItem('partidas')) || [];
+    partidas.push(partida);
+    localStorage.setItem('partidas', JSON.stringify(partidas));
+
+    // Salva os jogadores atualizados
+    localStorage.setItem('timesOrganizados', JSON.stringify(times));
+
+    alert('Partida registrada com sucesso!');
+
+    // Reseta o formulário e os selects fixos
+    e.target.reset();
+    timeASelect.selectedIndex = 0;
+    timeBSelect.selectedIndex = 0;
+
+    // Limpa os selects dinâmicos criados para eventos
+    const containers = [
+      'golsAEventos', 'golsBEventos',
+      'vermelhosAEventos', 'vermelhosBEventos',
+      'amarelosAEventos', 'amarelosBEventos',
+      'atrasosAEventos', 'atrasosBEventos'
+    ];
+    containers.forEach(id => {
+      document.getElementById(id).innerHTML = '';
+    });
+  });
+
+  function verResultados() {
+    document.getElementById("loadingOverlay").style.display = "flex";
+    setTimeout(() => {
+      window.location.href = "resultados.html";
+    }, 2000);
+  }
+</script>
+
+</body>
+</html>

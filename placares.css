@@ -1,0 +1,111 @@
+ * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #222;
+      margin-bottom: 30px;
+    }
+
+    #placares {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .jogo {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+    }
+
+    .jogo:hover {
+      transform: translateY(-3px);
+    }
+
+    .jogo h3 {
+      margin-top: 0;
+      color:green;
+    }
+
+    p {
+      margin: 6px 0;
+    }
+
+    details {
+      margin-top: 10px;
+    }
+
+    summary {
+      font-weight: bold;
+      cursor: pointer;
+      padding: 5px 0;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin: 5px 0 10px;
+    }
+
+    li {
+      line-height: 1.4;
+    }
+
+    .botao-voltar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #25ad2c;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 1000;
+   
+}
+
+.botao-voltar:hover {
+  background-color: #066b03f8;
+  transform: translateX(-50%) scale(1.05);
+}
+
+
+    @media (max-width: 600px) {
+      .jogo {
+        padding: 15px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .jogo h3 {
+        font-size: 18px;
+      }
+
+      summary {
+        font-size: 14px;
+      }
+      .botao-voltar{
+        text-align: center;
+        font-size: 16px;
+        white-space: nowrap; 
+      }
+    }

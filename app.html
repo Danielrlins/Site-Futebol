@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Pelada Só Joga Quem Bebe</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <script src="adm.js"></script>
+  <script>
+    verificarPermissao(false); // Só admin pode acessar
+  </script>
+
+  <h1 class="title">Pelada Só Joga Quem Bebe 🍺</h1>
+  <button style="margin-top: 1%;" onclick="window.location.href='index.html'">Voltar para o Login</button>
+
+  <div class="container">
+    <div class="form-container">
+      <input type="text" id="nome" placeholder="Nome do jogador" />
+      <input type="number" id="estrela" min="1" max="5" placeholder="Estrelas (1-5)" />
+      <button onclick="adicionarJogador()">Adicionar</button>
+    </div>
+    <p>Total de jogadores: <span id="contador">0</span></p>
+    
+    <div class="label">
+      <label for="quantidadeTimes">Quantidade de times:</label>
+      <input type="number" id="quantidadeTimes" min="2" max="10" value="2" />
+    </div>
+    <div class="label">
+      <label for="tamanhoTime">Jogadores por time:</label>
+      <input type="number" id="tamanhoTime" min="1" max="11" value="5" />
+    </div>
+    <button onclick="limparJogadores()" class="botao-vermelho">Limpar Todos</button>
+    <ul id="listaJogadores"></ul>
+    <button onclick="sortearTimes()">Sortear Times</button>
+    <div class="times-container"></div>
+    
+    <button onclick="visualizarCampo()" style="margin-top: 10px; padding: 10px 20px; font-size: 16px;">
+    Visualizar Times no Campo
+    </button>
+  </div>
+
+  <!-- Tela de carregamento -->
+  <div class="loading-overlay" id="loading">
+    <p>Carregando times...</p>
+    <div class="spinner"></div>
+  </div>
+  
+  <script src="script.js"></script>
+
+
+</body>
+</html>
