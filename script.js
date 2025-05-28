@@ -41,6 +41,7 @@ function limparJogadores() {
     jogadores.length = 0;
     localStorage.removeItem('jogadores');         // Remove os jogadores
     localStorage.removeItem('timesOrganizados');  // Remove os times sorteados
+    localStorage.removeItem('partidas');
     salvarNoLocalStorage();
     exibirJogadores();
     document.querySelector('.times-container').innerHTML = '';
